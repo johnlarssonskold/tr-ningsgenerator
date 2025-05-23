@@ -110,19 +110,7 @@
       margin: 10px auto;
       display: block;
     }
-    @media print {
-      #logoTop {
-        display: block !important;
-        margin-bottom: 20px;
-      }
-      button, #amountSection, #backBtn, #pdfBtn, #lockToggle {
-        display: none !important;
-      }
-      body {
-        background-color: white;
-      }
-    }
-
+   
 
 #bonusChallenge {
     margin-top: 40px;
@@ -222,7 +210,6 @@
     </div>
     <button onclick="generateWorkout()">Generera nytt träningsprogram</button>
     <button id="lockToggle" onclick="toggleLock()">Tryck för träningsläge 🔓</button>
-    <button id="pdfBtn" onclick="saveAsPDF()">Spara som PDF</button>
     <div id="workoutOutput"></div>
     <button id="backBtn" onclick="goHome()">Tillbaka till startsidan</button>
   </div>
@@ -533,34 +520,6 @@
       });
     }
 
-    async function saveAsPDF() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const generator = document.getElementById("generator");
-      toggleLock(true);
-      const canvas = await html2canvas(generator, { scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL("image/png");
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgRatio = imgProps.width / imgProps.height;
-      const imgHeight = pdfWidth / imgRatio;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      heightLeft -= pdfHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
-      pdf.save("traningsprogram.pdf");
-      toggleLock(false);
-    }
-
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -605,10 +564,10 @@
   }
 
 
-// 📍 Platskontroll – endast tillgänglig inom 200 meter från angiven position
+// 📍 Platskontroll – endast tillgänglig inom 100 meter från angiven position
 const targetLat = 59.701785297465385;
 const targetLng = 16.245475184756483;
-const radiusMeters = 50;
+const radiusMeters = 100;
 
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
@@ -681,13 +640,9 @@ const allowAccess = () => {
       if (distance <= radiusMeters) {
         allowAccess();
       } else {
-      
-      
+            
         showDeniedMessage(`För att använda Sporthusets träningsgenerator måste du befinna dig inom Sporthusets område 😊💚</p><br>Avstånd från Sporthuset: ${Math.round(((distance)/1000)*100)/100}km`);
-        
-         
-        
-        
+                             
       }
     },
     function () {
